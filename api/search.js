@@ -10,8 +10,6 @@ export default async function handler(req) {
   if (!postcode) {
     return new Response(JSON.stringify({ error: 'Postcode is required' }), { status: 400 })
   }
-
-  // 1. Geocode
   const norm = postcode.replace(/\s+/g, '').toUpperCase()
   const geoRes = await fetch(`https://api.postcodes.io/postcodes/${norm}`)
   const geo = await geoRes.json()
@@ -19,16 +17,11 @@ export default async function handler(req) {
     return new Response(JSON.stringify({ error: 'Invalid UK postcode' }), { status: 400 })
   }
   const { longitude, latitude } = geo.result
-
-  // 2. Call Supabase RPC
   const { data, error } = await supabase
     .rpc('search_practices', { _lon: longitude, _lat: latitude, _radius: parseInt(radius,10) })
-
   if (error) {
-    console.error(error)
     return new Response(JSON.stringify({ error: 'Database query failed' }), { status: 500 })
   }
-
   return new Response(JSON.stringify({ practices: data }), {
     headers: { 'Content-Type': 'application/json' }
   })
