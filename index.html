@@ -9,9 +9,8 @@
       const pc = document.getElementById('pc').value;
       const res = await fetch(`/api/search?postcode=${pc}&radius=5000`);
       const json = await res.json();
-      const list = document.getElementById('results');
-      list.innerHTML = json.practices
-        .map(p => `<li>${p.provider_name} (${p.postcode}) — UDA cap ${p.uda_perf_target}, ${p.distance_meters} m away</li>`)
+      document.getElementById('results').innerHTML = json.practices
+        .map(p => `<li>${p.provider_name} (${p.postcode}) — ${p.distance_meters} m away</li>`)
         .join('');
     }
   </script>
